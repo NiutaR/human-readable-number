@@ -7,7 +7,7 @@ module.exports = function toReadable(number) {
         'ninety'
     ];
     let numberString = number.toString();
-    //if (value === 0) return 'zero'
+    if (number === 0) return 'zero'
     if (number < 20) {
         return ones[number];
     }
@@ -17,7 +17,9 @@ module.exports = function toReadable(number) {
     if (numberString.length === 3) {
         return ones[numberString[0]] + ' ' + 'hundred' + ' '  + tens[numberString[1]] + ' ' + ones[numberString[2]];
     }
-    
+    if (numberString.length === 4) {
+        return ones[numberString[0]] + ' ' + 'thousand' + ' ' + ones[numberString[1]] + ' ' + 'hundred' + ' '  + tens[numberString[2]] + ' ' + ones[numberString[3]];
+    }
     
     
 }
