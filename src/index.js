@@ -1,66 +1,98 @@
 module.exports = function toReadable(number) {
-    let ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
-        'seventeen', 'eighteen', 'nineteen'
-    ];
+    var SINGLE_NUMBERS = {
+        0: '',
+        1: 'one',
+        2: 'two',
+        3: 'three',
+        4: 'four',
+        5: 'five',
+        6: 'six',
+        7: 'seven',
+        8: 'eight',
+        9: 'nine',
+    };
 
-    let tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty',
-        'ninety'
-    ];
-    var numberString = number.toString();
+    var TENTH_NUMBERS = {
+        1: 'ten',
+        2: 'twenty',
+        3: 'thirty',
+        4: 'forty',
+        5: 'fifty',
+        6: 'sixty',
+        7: 'seventy',
+        8: 'eighty',
+        9: 'ninety',
+    };
+
+    var TENTH_SUFIXES_NUMBERS = {
+        0: 'ten',
+        1: 'eleven',
+        2: 'twelve',
+        3: 'thirteen',
+        4: 'fourteen',
+        5: 'fifteen',
+        6: 'sixteen',
+        7: 'seventeen',
+        8: 'eighteen',
+        9: 'nineteen',
+    };
+
+    var LAL = {
+        100: 'hundred',
+        1000: 'thousand',
+    };
+
+
+    var maxSupported = 1000;
+
+
+  if (number.toString().length > maxSupported) {
+    return `Max supported: ${maxSupported}, provided ${number}`.trim();
+  }
+
+  function loop(currentNumber, currentTenth, str) {
     if (number === 0) return 'zero';
-    if (number < 20) {
-        return ones[number];
+    // If it ends with zero
+    if (currentNumber === 0) return str.trim();
+
+    // If it's the last digit
+    if (currentTenth === 1) return str + ' ' + SINGLE_NUMBERS[currentNumber].trim();
+
+    if (currentNumber < currentTenth)
+      return loop(currentNumber, currentTenth / 10, str).trim();
+
+    var firstNumber = Math.floor(currentNumber / currentTenth);
+    var secondNumber = currentNumber % currentTenth;
+
+    if (currentTenth === 10) {
+      if (firstNumber !== 1) {
+        return loop(
+          0,
+          0,
+          str +
+            ' ' +
+            TENTH_NUMBERS[firstNumber] +
+            ' ' +
+            SINGLE_NUMBERS[secondNumber],
+        );
+      } else {
+        return loop(
+          0,
+          0,
+          str + ' ' + TENTH_SUFIXES_NUMBERS[currentNumber % currentTenth],
+        );
+      }
     }
 
-    if (numberString.length === 2) {
-        return tens[numberString[0]] + ' ' + ones[numberString[1]];
-    }
-    if (numberString.length === 3) {
+    var addition = LAL[currentTenth];
 
-        if (numberString[1] === '0' && numberString[2] === '0') {
-            return ones[Number(numberString[0])] + ' ' + 'hundred';
-        }
-        if (numberString[1] === '1' && numberString[2] === '0') {
+    return loop(
+      currentNumber % currentTenth,
+      currentTenth / 10,
+      `${str} ${SINGLE_NUMBERS[firstNumber]} ${addition}`,
+    );
+  }
 
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[10];
-        }
-        if (numberString[1] === '1' && numberString[2] === '1') {
+  return loop(number, maxSupported, '');
 
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[11];
-        }
-        if (numberString[1] === '1' && numberString[2] === '2') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[12];
-        }
-        if (numberString[1] === '1' && numberString[2] === '3') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[13];
-        }
-        if (numberString[1] === '1' && numberString[2] === '4') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[14];
-        }
-        if (numberString[1] === '1' && numberString[2] === '5') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[15];
-        }
-        if (numberString[1] === '1' && numberString[2] === '6') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[16];
-        }
-        if (numberString[1] === '1' && numberString[2] === '7') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[17];
-        }
-        if (numberString[1] === '1' && numberString[2] === '8') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[18];
-        }
-        if (numberString[1] === '1' && numberString[2] === '9') {
-
-            return ones[(numberString[0])] + ' hundred' + ' ' + ones[19];
-        } else {
-            return ones[numberString[0]] + ' hundred' + ' ' + tens[numberString[1]] + ' ' + ones[numberString[2]];
-        }
-    }
 }
